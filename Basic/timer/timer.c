@@ -1,7 +1,6 @@
 #include "timer.h"
 #include "usart.h"
 
-
 TIM_ICInitTypeDef  TIM4_ICInitStructure;
 
 void TIM4_CH3_Cap_Init(u16 arr,u16 psc)
@@ -77,7 +76,7 @@ void TIM4_IRQHandler(void)
 			{	  			
 				TIM4CH3_CAPTURE_STA|=0X80;		//标记成功捕获到一次高电平脉宽
 				TIM4CH3_CAPTURE_VAL=TIM_GetCapture3(TIM4);
-		   		TIM_OC3PolarityConfig(TIM4,TIM_ICPolarity_Rising); //CC1P=0 设置为上升沿捕获
+		   	TIM_OC3PolarityConfig(TIM4,TIM_ICPolarity_Rising); //CC1P=0 设置为上升沿捕获
 			}
 			else  								//还未开始,第一次捕获上升沿
 			{
@@ -130,7 +129,6 @@ void TIM4_IRQHandler(void)
 
 
 //TIM4CH4
-
 void TIM4_CH4_Cap_Init(u16 arr,u16 psc)
 {	 
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -145,7 +143,7 @@ void TIM4_CH4_Cap_Init(u16 arr,u16 psc)
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	GPIO_ResetBits(GPIOB,GPIO_Pin_9);						//PA2 下拉
 	
-	//初始化定时器2 TIM4	 
+	//初始化定时器 TIM4	 
 	TIM_TimeBaseStructure.TIM_Period = arr; //设定计数器自动重装值 
 	TIM_TimeBaseStructure.TIM_Prescaler =psc; 	//预分频器   
 	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; //设置时钟分割:TDTS = Tck_tim
@@ -169,53 +167,7 @@ void TIM4_CH4_Cap_Init(u16 arr,u16 psc)
 	
 	TIM_ITConfig(TIM4,TIM_IT_Update|TIM_IT_CC4,ENABLE);//允许更新中断 ,允许CC4IE捕获中断	
 	
-  TIM_Cmd(TIM4,ENABLE ); 	//使能定时器2  
+  TIM_Cmd(TIM4,ENABLE ); 	//使能定时器4
 
 }
-
-
-//u8  TIM4CH4_CAPTURE_STA = 0;	//输入捕获状态		    				
-//u16	TIM4CH4_CAPTURE_VAL;	//输入捕获值
-
-//void TIM4_CH4_IRQHandler(void)
-//{ 
-
-// 	if((TIM4CH4_CAPTURE_STA&0X80)==0)//还未成功捕获	
-//	{	  
-//		if (TIM_GetITStatus(TIM4, TIM_IT_Update) != RESET)
-//		 
-//		{	    
-//			if(TIM4CH4_CAPTURE_STA&0X40)//已经捕获到高电平了
-//			{
-//				if((TIM4CH4_CAPTURE_STA&0X3F)==0X3F)//高电平太长了
-//				{
-//					TIM4CH4_CAPTURE_STA|=0X80;//标记成功捕获了一次
-//					TIM4CH4_CAPTURE_VAL=0XFFFF;
-//				}
-//				else TIM4CH4_CAPTURE_STA++;
-//			}	 
-//		}
-//		if (TIM_GetITStatus(TIM4, TIM_IT_CC4) != RESET)//捕获1发生捕获事件
-//		{	
-//			if(TIM4CH4_CAPTURE_STA&0X40)		//捕获到一个下降沿 		
-//			{	  			
-//				TIM4CH4_CAPTURE_STA|=0X80;		//标记成功捕获到一次高电平脉宽
-//				TIM4CH4_CAPTURE_VAL=TIM_GetCapture4(TIM4);
-//		   	TIM_OC4PolarityConfig(TIM4,TIM_ICPolarity_Rising); //CC1P=0 设置为上升沿捕获
-//			}
-//			else  								//还未开始,第一次捕获上升沿
-//			{
-//				TIM4CH4_CAPTURE_STA=0;			//清空
-//				TIM4CH4_CAPTURE_VAL=0;
-//	 			TIM_SetCounter(TIM4,0);
-//				TIM4CH4_CAPTURE_STA|=0X40;		//标记捕获到了上升沿
-//				TIM_OC4PolarityConfig(TIM4,TIM_ICPolarity_Falling);		//CC1P=1 设置为下降沿捕获
-//			}		    
-//		}			     	    					   
-// 	}
-// 
-//    TIM_ClearITPendingBit(TIM4, TIM_IT_CC4|TIM_IT_Update); //清除中断标志位
-// 
-//}
-
 

@@ -18,23 +18,21 @@ int main (void)
   u32 temp3=0; 
 	u32 temp4=0; 
 	int speed=0;
-	u32 stop=4600;
+	u32 stop=4600;//电机不转的底值
 	
 	RCC_Configuration(); 								//时钟设置
 	MOTOR_Init();												//LED初始化
 	TIM3_PWM_Init(7200-1,0); 						//PWM时钟频率=72000/(7200)*(1) = 10kHZ 
-
-	TIM_SetCompare3(TIM3,5000);					//改变比较值TIM3->CCR2达到调节占空比的效果
-	TIM_SetCompare4(TIM3,5000);	
 		
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2); 	 //设置NVIC中断分组2:2位抢占优先级，2位响应优先级
 	USART1_Init(115200); 	 //串口初始化为115200
 	TIM4_CH3_Cap_Init(0XFFFF,72-1);	//以1Mhz的频率计数 	
 	TIM4_CH4_Cap_Init(0XFFFF,72-1);	//以1Mhz的频率计数 	
 	
-	delay_s(3);
+	delay_s(3);//等接收机初始化完成
 	
-	while(1){		
+	while(1)
+	{		
 	
 		TIM_SetCompare3(TIM3,speed);					
 		TIM_SetCompare4(TIM3,speed);	
@@ -57,11 +55,11 @@ int main (void)
       TIM4CH4_CAPTURE_STA = 0;        
     }	
 		
+		//遥控信号处理	
 		if(temp4<850)//没开控
 		{
 			Stop();
-		}
-		
+		}		
 		else if(temp4>1550)//前进
 		{
 			if(temp3<1490)//向左
@@ -81,7 +79,7 @@ int main (void)
 				Turn_right();	
 				delay_us(b);			
 			}
-			else if(1490<temp3<1510)
+			else if(1490<temp3<1510)//方向杆回中
 			{
 			speed	= temp4 - 1500;
 			speed *= 5;
@@ -89,8 +87,7 @@ int main (void)
 			Go_Forward();
 			delay_us(b);
 			}
-		}
-		
+		}	
 		else if(temp4<1450)//后退
 		{
 			if(temp3<1490)//向左
@@ -119,8 +116,7 @@ int main (void)
 			Draw_Back();
 			delay_us(b);
 			}
-		}
-		
+		}		
 		else if(temp3<1490)//向左
 		{
 			speed	= temp3 - 1500;
@@ -129,8 +125,7 @@ int main (void)
 			speed += stop;
 			Turn_left();
 			delay_us(b);
-		}
-		
+		}		
 		else if(temp3>1510)//向右
 		{
 			speed	= temp3 - 1500;
@@ -138,9 +133,8 @@ int main (void)
 			speed += stop;
 			Turn_right();	
 			delay_us(b);			
-		}
-		
-		else if(1490<temp3<1510&&temp4<1550)
+		}		
+		else if(1490<temp3<1510&&temp4<1550)//方向、油门回中
 		{
 			Stop();
 		}
